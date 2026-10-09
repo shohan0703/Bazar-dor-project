@@ -58,7 +58,7 @@ export default function Navbar() {
           </div>
         </Link>
 
-        {/* Sign in and sign up */}
+        
         <div className="flex shrink-0 items-center gap-1 sm:gap-3">
           <Link
             href="/login"

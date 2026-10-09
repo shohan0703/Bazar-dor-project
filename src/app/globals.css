@@ -29,29 +29,21 @@ body {
 
 
 .price-marquee {
-  display: flex;
-  width: max-content;
-  animation: bazar-marquee 35s linear infinite;
-  will-change: transform;
+  display: flex !important;
+  width: max-content !important;
+  animation: bazarMarquee 45s linear infinite !important;
 }
 
 .price-marquee:hover {
-  animation-play-state: paused;
+  animation-play-state: paused !important;
 }
 
-@keyframes bazar-marquee {
+@keyframes bazarMarquee {
   0% {
-    transform: translateX(0);
+    transform: translateX(0%);
   }
-
   100% {
     transform: translateX(-50%);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .price-marquee {
-    animation: none;
   }
 }
 

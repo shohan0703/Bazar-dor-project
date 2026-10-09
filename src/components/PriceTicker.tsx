@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -17,8 +16,7 @@ interface Product {
   };
 }
 
-const API_URL =
-  "https://api.api-store.workers.dev/api/bazardor/products";
+const API_URL = "https://api.api-store.workers.dev/api/bazardor/products";
 
 export default function PriceTicker() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -43,7 +41,6 @@ export default function PriceTicker() {
 
         const data: unknown = await response.json();
 
-       
         if (!Array.isArray(data)) {
           throw new Error("Unexpected API response format");
         }
@@ -88,17 +85,15 @@ export default function PriceTicker() {
 
   return (
     <div
-      className="overflow-hidden border-t border-gray-200 bg-white"
+      className="overflow-hidden border-t border-gray-200 bg-white py-1.5 w-full"
       aria-label="আজকের বাজারদর"
     >
       <div className="flex items-center">
-        
-
         <div className="min-w-0 flex-1 overflow-hidden">
-          <div className="price-marquee flex w-max items-center">
+          <div className="price-marquee flex items-center shrink-0">
             {tickerProducts.map((product, index) => {
-              const isUp = product.change.dir === "up";
-              const isDown = product.change.dir === "down";
+              const isUp = product.change?.dir === "up";
+              const isDown = product.change?.dir === "down";
 
               return (
                 <span
@@ -129,7 +124,7 @@ export default function PriceTicker() {
                     }
                   >
                     {isUp ? "▲" : isDown ? "▼" : "—"}{" "}
-                    {Math.abs(product.change.pct)}%
+                    {Math.abs(product.change?.pct || 0)}%
                   </span>
 
                   <span className="ml-2 text-gray-300">|</span>
