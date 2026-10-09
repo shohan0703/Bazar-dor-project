@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo, useState } from "react";
@@ -27,6 +26,39 @@ type Props = {
 const money = (amount: number) =>
   new Intl.NumberFormat("bn-BD").format(amount);
 
+
+function getItemIcon(nameBn: string, fallbackIcon?: string): string {
+  const name = nameBn.toLowerCase();
+
+ 
+  if (name.includes("ডিম")) return "🥚";
+  if (name.includes("দুধ")) return "🥛";
+  if (name.includes("দই")) return "🫙";
+  if (name.includes("মাখন") || name.includes("বাটার")) return "🧈";
+  if (name.includes("পনির") || name.includes("চিয")) return "🧀";
+
+  
+  if (name.includes("গরু")) return "🥩";
+  if (name.includes("খাসি")) return "🍖";
+  if (name.includes("মুরগি") || name.includes("চিকেন")) return "🍗";
+  if (name.includes("হাঁস")) return "🦆";
+
+
+  if (name.includes("রসুন")) return "🧄";
+  if (name.includes("আদা")) return "🫚";
+  if (name.includes("পেঁয়াজ") || name.includes("পিঁয়াজ")) return "🧅";
+  if (name.includes("মরিচ")) return "🌶️";
+
+  
+  if (name.includes("চাল")) return "🍚";
+  if (name.includes("ডাল")) return "🫘";
+  if (name.includes("তেল")) return "🛢️";
+  if (name.includes("মাছ")) return "🐟";
+  if (name.includes("সবজি") || name.includes("শাক")) return "🥬";
+
+  return fallbackIcon || "🛒";
+}
+
 export default function CategoryProducts({
   products,
   categoryName,
@@ -51,7 +83,6 @@ export default function CategoryProducts({
 
   return (
     <>
-      
       <div className="flex min-h-[48px] items-center justify-between gap-3 rounded-xl border border-[#e2eae3] bg-[#fbfdfb] px-4 py-2">
         <span className="text-xs text-gray-500">
           সাজান
@@ -66,7 +97,7 @@ export default function CategoryProducts({
           <option value="default">ডিফল্ট</option>
           <option value="low">দাম: কম থেকে বেশি</option>
           <option value="high">দাম: বেশি থেকে কম</option>
-          <option value="name">নাম অনুযায়ী</option>
+          <option value="name">নাম অনুযায়ী</option>
         </select>
       </div>
 
@@ -78,7 +109,7 @@ export default function CategoryProducts({
         <div className="rounded-xl border border-[#e2eae3] bg-[#fbfdfb] px-4 py-12 text-center">
           <p className="text-3xl">🧺</p>
           <h2 className="mt-3 font-semibold text-[#25352c]">
-            এই ক্যাটাগরিতে কোনো পণ্য পাওয়া যায়নি
+            এই ক্যাটাগরিতে কোনো পণ্য পাওয়া যায়নি
           </h2>
           <p className="mt-1 text-sm text-gray-500">
             API-এর category value যাচাই করে দেখো।
@@ -89,6 +120,7 @@ export default function CategoryProducts({
           {sortedProducts.map((product) => {
             const direction = product.change?.dir ?? "flat";
             const percentage = product.change?.pct ?? 0;
+            const itemIcon = getItemIcon(product.nameBn, product.categoryIcon);
 
             return (
               <Link
@@ -98,7 +130,7 @@ export default function CategoryProducts({
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#f0f3ef] text-xl">
-                    {product.categoryIcon || "🛒"}
+                    {itemIcon}
                   </div>
 
                   <div className="min-w-0 flex-1">
