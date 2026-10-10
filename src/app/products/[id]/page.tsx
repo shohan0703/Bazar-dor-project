@@ -41,21 +41,21 @@ function ProductDetailContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // প্রাইভেট রাউট চেক
+  
   useEffect(() => {
     if (!sessionLoading && !session?.user) {
       router.push("/login");
     }
   }, [sessionLoading, session, router]);
 
-  // API থেকে নির্দিষ্ট প্রোডাক্টের ডেটা ফেচ করা
+  
   useEffect(() => {
     async function fetchProductDetails() {
       if (!id || !session?.user) return;
 
       try {
         setLoading(true);
-        // প্রথমে ডাইরেক্ট প্রোডাক্ট এন্ডপয়েন্ট ট্রাই করতে পারেন, না হলে অল প্রোডাক্টস থেকে ফিল্টার
+       
         const res = await fetch(`https://openapi.programming-hero.com/api/bazardor/product/${id}`);
         
         if (res.ok) {
@@ -68,7 +68,7 @@ function ProductDetailContent() {
           }
         }
 
-        // যদি ডাইরেক্ট এন্ডপয়েন্ট কাজ না করে তবে পুরো লিস্ট থেকে খুঁজে বের করা
+      
         const response = await fetch("https://openapi.programming-hero.com/api/bazardor/products");
         if (!response.ok) {
           throw new Error("পণ্যের তথ্য লোড করা যায়নি");
@@ -140,7 +140,7 @@ function ProductDetailContent() {
         <span className="text-gray-800 font-medium">{product.nameBn}</span>
       </nav>
 
-      {/* Product Hero Card */}
+     
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[#eff5ef] rounded-2xl flex items-center justify-center text-3xl border border-gray-100">
@@ -159,7 +159,7 @@ function ProductDetailContent() {
           </div>
         </div>
 
-        {/* Current Price Box */}
+       
         <div className="w-full md:w-auto bg-[#f9fcfa] border border-green-100 rounded-2xl p-4 text-center md:text-right min-w-[180px]">
           <p className="text-xs text-gray-500 mb-1">আজকের দাম</p>
           <div className="text-2xl sm:text-3xl font-extrabold text-green-800">
@@ -172,7 +172,7 @@ function ProductDetailContent() {
         </div>
       </div>
 
-      {/* Price Summary Cards */}
+      
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
           <p className="text-xs text-gray-500 mb-1">আজকের দাম</p>
@@ -193,7 +193,7 @@ function ProductDetailContent() {
         </div>
       </div>
 
-      {/* Market-wise Price Table */}
+     
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="p-5 border-b border-gray-100">
           <h2 className="text-lg font-bold text-gray-900">বাজারভিত্তিক আজকের দাম</h2>
