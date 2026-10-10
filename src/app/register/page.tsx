@@ -2,21 +2,45 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { signIn } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { signUp, signIn } from "@/lib/auth-client";
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleEmailSignUp = (e: React.FormEvent) => {
+  const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (password !== confirmPassword) {
       alert("পাসওয়ার্ড দুটি মিলছে না!");
       return;
     }
-    alert("ইমেইল রেজিস্ট্রেশন প্রক্রিয়া শুরু হচ্ছে...");
+
+    setLoading(true);
+
+    await signUp.email(
+      {
+        email,
+        password,
+        name,
+        callbackURL: "/",
+      },
+      {
+        onSuccess: () => {
+          alert("রেজিস্ট্রেশন সফল হয়েছে!");
+          router.push("/");
+        },
+        onError: (ctx) => {
+          alert(ctx.error.message || "রেজিস্ট্রেশন ব্যর্থ হয়েছে!");
+          setLoading(false);
+        },
+      }
+    );
   };
 
   return (
@@ -35,7 +59,7 @@ export default function RegisterPage() {
               placeholder="যেমন: রহিম উদ্দিন"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#008A45] focus:bg-white"
+              className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#008A45] focus:bg-white text-gray-800"
               required
             />
           </div>
@@ -47,7 +71,7 @@ export default function RegisterPage() {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#008A45] focus:bg-white"
+              className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#008A45] focus:bg-white text-gray-800"
               required
             />
           </div>
@@ -59,7 +83,7 @@ export default function RegisterPage() {
               placeholder="কমপক্ষে ৮ অক্ষর"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#008A45] focus:bg-white"
+              className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#008A45] focus:bg-white text-gray-800"
               required
             />
           </div>
@@ -71,16 +95,17 @@ export default function RegisterPage() {
               placeholder="আবার লিখুন"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#008A45] focus:bg-white"
+              className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#008A45] focus:bg-white text-gray-800"
               required
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-2.5 bg-[#008A45] text-white font-medium rounded-lg hover:bg-[#007339] transition text-sm mt-2"
+            disabled={loading}
+            className="w-full py-2.5 bg-[#008A45] text-white font-medium rounded-lg hover:bg-[#007339] transition text-sm mt-2 disabled:opacity-50"
           >
-            অ্যাকাউন্ট তৈরি করুন
+            {loading ? "অ্যাকাউন্ট তৈরি হচ্ছে..." : "অ্যাকাউন্ট তৈরি করুন"}
           </button>
         </form>
 

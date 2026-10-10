@@ -1,10 +1,9 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
+import { useSession, signOut } from "@/lib/auth-client";
 
 const categories = [
   { name: "চাল", emoji: "🍚", slug: "chal" },
@@ -20,6 +19,7 @@ const categories = [
 export default function Navbar() {
   const pathname = usePathname();
   const [banglaDate, setBanglaDate] = useState("");
+  const { data: session, isPending } = useSession();
 
   useEffect(() => {
     const date = new Intl.DateTimeFormat("bn-BD", {
@@ -32,9 +32,18 @@ export default function Navbar() {
     setBanglaDate(date);
   }, []);
 
+  const handleSignOut = async () => {
+    await signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          window.location.reload();
+        },
+      },
+    });
+  };
+
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-[#f9fcfa]">
-      
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2">
         <Link
           href="/"
@@ -58,25 +67,44 @@ export default function Navbar() {
           </div>
         </Link>
 
-        
-        <div className="flex shrink-0 items-center gap-1 sm:gap-3">
-          <Link
-            href="/login"
-            className="rounded-lg px-2 py-2 text-xs font-semibold text-gray-800 transition hover:bg-gray-100 sm:px-3 sm:text-sm"
-          >
-            সাইন ইন
-          </Link>
+        {/* Auth Actions */}
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          {isPending ? (
+            <div className="h-8 w-20 animate-pulse rounded-lg bg-gray-200" />
+          ) : session?.user ? (
+            <div className="flex items-center gap-2 sm:gap-3">
+              <span className="max-w-[120px] truncate rounded-lg bg-green-50 px-2.5 py-1.5 text-xs font-semibold text-green-900 border border-green-200 sm:max-w-none sm:text-sm">
+                👤 {session.user.name || session.user.email}
+              </span>
 
-          <Link
-            href="/register"
-            className="rounded-lg bg-green-700 px-3 py-2 text-xs font-semibold text-white transition hover:bg-green-800 sm:px-4 sm:text-sm"
-          >
-            সাইন আপ
-          </Link>
+              <button
+                onClick={handleSignOut}
+                className="rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-red-700 sm:px-4 sm:text-sm"
+              >
+                সাইন আউট
+              </button>
+            </div>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="rounded-lg px-2 py-2 text-xs font-semibold text-gray-800 transition hover:bg-gray-100 sm:px-3 sm:text-sm"
+              >
+                সাইন ইন
+              </Link>
+
+              <Link
+                href="/register"
+                className="rounded-lg bg-green-700 px-3 py-2 text-xs font-semibold text-white transition hover:bg-green-800 sm:px-4 sm:text-sm"
+              >
+                সাইন আপ
+              </Link>
+            </>
+          )}
         </div>
       </div>
 
-     
+      
       <nav
         aria-label="পণ্যের ক্যাটাগরি"
         className="border-t border-gray-200/70"
@@ -86,8 +114,7 @@ export default function Navbar() {
             const href = "/categories/" + category.slug;
 
             const isActive =
-              pathname === href ||
-              pathname.startsWith(href + "/");
+              pathname === href || pathname.startsWith(href + "/");
 
             return (
               <Link
@@ -111,9 +138,6 @@ export default function Navbar() {
           })}
         </div>
       </nav>
-
-    
-      
     </header>
   );
 }
