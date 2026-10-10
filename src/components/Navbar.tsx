@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession, signOut } from "@/lib/auth-client";
+import { useSession } from "@/lib/auth-client";
 
 const categories = [
   { name: "চাল", emoji: "🍚", slug: "chal" },
@@ -32,16 +32,6 @@ export default function Navbar() {
     setBanglaDate(date);
   }, []);
 
-  const handleSignOut = async () => {
-    await signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          window.location.reload();
-        },
-      },
-    });
-  };
-
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-[#f9fcfa]">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2">
@@ -67,23 +57,30 @@ export default function Navbar() {
           </div>
         </Link>
 
-        {/* Auth Actions */}
+     
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           {isPending ? (
             <div className="h-8 w-20 animate-pulse rounded-lg bg-gray-200" />
           ) : session?.user ? (
-            <div className="flex items-center gap-2 sm:gap-3">
-              <span className="max-w-[120px] truncate rounded-lg bg-green-50 px-2.5 py-1.5 text-xs font-semibold text-green-900 border border-green-200 sm:max-w-none sm:text-sm">
-                👤 {session.user.name || session.user.email}
+            <Link
+              href="/profile"
+              className="flex items-center gap-2 rounded-xl bg-green-50 px-3 py-1.5 border border-green-200 transition hover:bg-green-100"
+            >
+              <img
+                src={
+                  session.user.image ||
+                  `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                    session.user.name || session.user.email
+                  )}&background=22c55e&color=fff`
+                }
+                alt="Avatar"
+                className="h-6 w-6 rounded-full object-cover"
+              />
+              <span className="max-w-[100px] truncate text-xs font-semibold text-green-900 sm:max-w-none sm:text-sm">
+                {session.user.name || session.user.email}
               </span>
-
-              <button
-                onClick={handleSignOut}
-                className="rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-red-700 sm:px-4 sm:text-sm"
-              >
-                সাইন আউট
-              </button>
-            </div>
+              <span className="text-xs text-gray-500">▾</span>
+            </Link>
           ) : (
             <>
               <Link
@@ -104,7 +101,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      
+    
       <nav
         aria-label="পণ্যের ক্যাটাগরি"
         className="border-t border-gray-200/70"
