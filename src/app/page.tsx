@@ -1,10 +1,10 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const API_URL =
-  "https://api.api-store.workers.dev/api/bazardor/products";
+  "https://openapi.programming-hero.com/api/bazardor/products";
 
 type Product = {
   id: number;
@@ -26,7 +26,10 @@ function ProductCard({ product }: { product: Product }) {
   const isDown = product.change?.dir === "down";
 
   return (
-    <article className="rounded-xl border border-[#e1e9e2] bg-[#fbfdfb] p-3 transition hover:-translate-y-0.5 hover:shadow-md sm:p-4">
+    <Link
+      href={`/products/${product.id}`}
+      className="block rounded-xl border border-[#e1e9e2] bg-[#fbfdfb] p-3 transition hover:-translate-y-0.5 hover:shadow-md sm:p-4"
+    >
       <div className="flex items-center gap-3">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#eff5ef] text-2xl">
           {product.categoryIcon || "🛒"}
@@ -63,7 +66,7 @@ function ProductCard({ product }: { product: Product }) {
           {product.change?.pct?.toLocaleString("bn-BD") ?? "০"}%
         </span>
       </div>
-    </article>
+    </Link>
   );
 }
 
@@ -73,7 +76,6 @@ export default function Home() {
   const [error, setError] = useState("");
   const [banglaDate, setBanglaDate] = useState("");
 
- 
   useEffect(() => {
     const updateDate = () => {
       const today = new Intl.DateTimeFormat("bn-BD", {
@@ -90,14 +92,13 @@ export default function Home() {
     updateDate();
   }, []);
 
- 
   useEffect(() => {
     async function loadProducts() {
       try {
         const response = await fetch(API_URL);
 
         if (!response.ok) {
-          throw new Error("পণ্যের তথ্য লোড করা যায়নি");
+          throw new Error("পণ্যের তথ্য লোড করা যায়নি");
         }
 
         const result = await response.json();
@@ -113,7 +114,7 @@ export default function Home() {
         setProducts(list);
       } catch {
         setError(
-          "পণ্যের তথ্য পাওয়া যাচ্ছে না। কিছুক্ষণ পর আবার চেষ্টা করুন।"
+          "পণ্যের তথ্য পাওয়া যাচ্ছে না। কিছুক্ষণ পর আবার চেষ্টা করুন।"
         );
       } finally {
         setLoading(false);
@@ -135,11 +136,9 @@ export default function Home() {
     <main className="min-h-screen bg-[#f0f6f1] text-[#25352c]">
       <div className="mx-auto max-w-6xl px-4 pb-12 pt-5 sm:pt-7">
 
-       
+        {/* Hero Section */}
         <section className="flex min-h-[200px] items-center justify-between gap-5 rounded-2xl border border-[#e1e9e2] bg-[#fbfdfb] p-5 sm:p-8">
           <div className="max-w-xl">
-
-            
             <span className="inline-block rounded-full bg-[#e0f2e5] px-3 py-1 text-xs font-medium text-green-800">
               {banglaDate || "তারিখ লোড হচ্ছে..."}
             </span>
@@ -150,7 +149,7 @@ export default function Home() {
 
             <p className="mt-3 text-xs leading-6 text-gray-600 sm:text-sm">
               চাল, ডাল, তেল, সবজি, মাছ, মাংস, ডিম ও মসলার দাম —
-              বাজারদরের বিস্তারিত এবং দামের পরিবর্তন এক জায়গায়।
+              বাজারদরের বিস্তারিত এবং দামের পরিবর্তন এক জায়গায়।
             </p>
 
             <a
@@ -170,14 +169,14 @@ export default function Home() {
           </div>
         </section>
 
-       
+        {/* Dynamic Price Sections */}
         <div className="mt-7 space-y-7" id="price-sections">
 
-          
+          {/* Increased Section */}
           <section>
             <h2 className="mb-4 flex items-center gap-2 text-lg font-bold">
               <span className="text-red-500">▲</span>
-              আজ দাম বেড়েছে
+              আজ দাম বেড়েছে
             </h2>
 
             {loading ? (
@@ -196,13 +195,13 @@ export default function Home() {
             ) : (
               !error && (
                 <p className="rounded-xl border border-gray-200 bg-white p-4 text-sm text-gray-500">
-                  বর্তমানে দাম বেড়েছে এমন পণ্যের তথ্য নেই।
+                  বর্তমানে দাম বেড়েছে এমন পণ্যের তথ্য নেই।
                 </p>
               )
             )}
           </section>
 
-         
+          {/* Decreased Section */}
           <section>
             <h2 className="mb-4 flex items-center gap-2 text-lg font-bold">
               <span className="text-green-600">▼</span>
@@ -231,7 +230,6 @@ export default function Home() {
             )}
           </section>
 
-         
           {error && (
             <p className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
               {error}
@@ -240,7 +238,7 @@ export default function Home() {
 
         </div>
 
-       
+        {/* All Products Section */}
         <section className="mt-8 pb-10" id="all-products">
           <div className="mb-5">
             <h2 className="text-xl font-bold text-[#25352c]">
@@ -268,7 +266,7 @@ export default function Home() {
           ) : (
             !error && (
               <p className="rounded-xl border border-gray-200 bg-white p-4 text-sm text-gray-600">
-                API থেকে কোনো পণ্যের তথ্য পাওয়া যায়নি।
+                API থেকে কোনো পণ্যের তথ্য পাওয়া যায়নি।
               </p>
             )
           )}

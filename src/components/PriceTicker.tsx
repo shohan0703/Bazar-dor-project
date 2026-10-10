@@ -16,7 +16,7 @@ interface Product {
   };
 }
 
-const API_URL = "https://api.api-store.workers.dev/api/bazardor/products";
+const API_URL = "https://openapi.programming-hero.com/api/bazardor/products";
 
 export default function PriceTicker() {
   const [products, setProducts] = useState<Product[]>([]);
