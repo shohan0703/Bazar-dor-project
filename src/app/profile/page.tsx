@@ -20,10 +20,10 @@ export default function ProfilePage() {
   }, [session]);
 
 
-  useEffect(() => {
+useEffect(() => {
     if (!isPending && !session?.user) {
-      toast.error("এই পেজটি দেখতে প্রথমে লগইন করুন!");
-      router.push("/login?error=unauthorized");
+      localStorage.setItem("showAuthToast", "true"); 
+      router.push("/login");
     }
   }, [isPending, session, router]);
 

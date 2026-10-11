@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { toast } from "react-hot-toast";
@@ -51,7 +52,7 @@ function ProductCard({ product }: { product: Product }) {
         <div>
           <p className="text-xs text-gray-500">আজকের দাম</p>
           <p className="mt-1 text-lg font-bold text-[#25352c]">
-            {product.today.toLocaleString("bn-BD")} টাকা
+            {Number(product.today).toLocaleString("bn-BD")} টাকা
           </p>
         </div>
 
@@ -65,48 +66,55 @@ function ProductCard({ product }: { product: Product }) {
           }`}
         >
           {isUp ? "▲" : isDown ? "▼" : "—"}{" "}
-          {product.change?.pct?.toLocaleString("bn-BD") ?? "০"}%
+          {Number(product.change?.pct ?? 0).toLocaleString("bn-BD")}%
         </span>
       </div>
     </Link>
   );
 }
 
-export default function Home() {
+function HomeContent() {
+  const searchParams = useSearchParams();
+
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [banglaDate, setBanglaDate] = useState("");
-  
-  const searchParams = useSearchParams();
 
- 
+  
   useEffect(() => {
-    const errorParam = searchParams.get("error");
-    if (errorParam === "unauthorized") {
+    if (searchParams.get("error") === "unauthorized") {
       toast.error("এই পেজটি দেখতে প্রথমে লগইন করুন!", {
-        id: "unauthorized-toast", 
+        id: "unauthorized-toast",
+        duration: 4000,
       });
+
+      
+      window.history.replaceState(
+        {},
+        "",
+        window.location.pathname + window.location.hash
+      );
     }
   }, [searchParams]);
 
+ 
   useEffect(() => {
-    const updateDate = () => {
-      const today = new Intl.DateTimeFormat("bn-BD", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-        timeZone: "Asia/Dhaka",
-      }).format(new Date());
+    const today = new Intl.DateTimeFormat("bn-BD", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone: "Asia/Dhaka",
+    }).format(new Date());
 
-      setBanglaDate(today);
-    };
-
-    updateDate();
+    setBanglaDate(today);
   }, []);
 
+ 
   useEffect(() => {
+    let cancelled = false;
+
     async function loadProducts() {
       try {
         const response = await fetch(API_URL);
@@ -125,17 +133,27 @@ export default function Home() {
               ? result.data
               : [];
 
-        setProducts(list);
+        if (!cancelled) {
+          setProducts(list);
+        }
       } catch {
-        setError(
-          "পণ্যের তথ্য পাওয়া যাচ্ছে না। কিছুক্ষণ পর আবার চেষ্টা করুন।"
-        );
+        if (!cancelled) {
+          setError(
+            "পণ্যের তথ্য পাওয়া যাচ্ছে না। কিছুক্ষণ পর আবার চেষ্টা করুন।"
+          );
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
 
     loadProducts();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const increased = products.filter(
@@ -149,8 +167,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-[#f0f6f1] text-[#25352c]">
       <div className="mx-auto max-w-6xl px-4 pb-12 pt-5 sm:pt-7">
-
-       
+        {/* Hero */}
         <section className="flex min-h-[200px] items-center justify-between gap-5 rounded-2xl border border-[#e1e9e2] bg-[#fbfdfb] p-5 sm:p-8">
           <div className="max-w-xl">
             <span className="inline-block rounded-full bg-[#e0f2e5] px-3 py-1 text-xs font-medium text-green-800">
@@ -185,8 +202,6 @@ export default function Home() {
 
         
         <div className="mt-7 space-y-7" id="price-sections">
-
-         
           <section>
             <h2 className="mb-4 flex items-center gap-2 text-lg font-bold">
               <span className="text-red-500">▲</span>
@@ -200,10 +215,7 @@ export default function Home() {
             ) : increased.length > 0 ? (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {increased.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                  />
+                  <ProductCard key={product.id} product={product} />
                 ))}
               </div>
             ) : (
@@ -215,7 +227,6 @@ export default function Home() {
             )}
           </section>
 
-         
           <section>
             <h2 className="mb-4 flex items-center gap-2 text-lg font-bold">
               <span className="text-green-600">▼</span>
@@ -229,10 +240,7 @@ export default function Home() {
             ) : decreased.length > 0 ? (
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {decreased.map((product) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                  />
+                  <ProductCard key={product.id} product={product} />
                 ))}
               </div>
             ) : (
@@ -249,10 +257,9 @@ export default function Home() {
               {error}
             </p>
           )}
-
         </div>
 
-       
+        
         <section className="mt-8 pb-10" id="all-products">
           <div className="mb-5">
             <h2 className="text-xl font-bold text-[#25352c]">
@@ -271,10 +278,7 @@ export default function Home() {
           ) : products.length > 0 ? (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {products.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                />
+                <ProductCard key={product.id} product={product} />
               ))}
             </div>
           ) : (
@@ -285,8 +289,21 @@ export default function Home() {
             )
           )}
         </section>
-
       </div>
     </main>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-[#f0f6f1]">
+          লোড হচ্ছে...
+        </div>
+      }
+    >
+      <HomeContent />
+    </Suspense>
   );
 }
