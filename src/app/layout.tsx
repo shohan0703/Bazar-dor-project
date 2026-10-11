@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { Toaster } from "react-hot-toast";
 import Navbar from "@/components/Navbar";
 import PriceTicker from "@/components/PriceTicker";
 import Footer from "@/components/Footer";
@@ -7,7 +8,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "বাজার দর",
-  description: "বাংলাদেশের নিত্যপ্রয়োজনীয় পণ্যের বাজারদর",
+  description: "বাংলাদেশের নিত্যপ্রয়োজনীয় পণ্যের বাজারদর",
 };
 
 export default function RootLayout({
@@ -18,6 +19,9 @@ export default function RootLayout({
   return (
     <html lang="bn">
       <body>
+       
+        <Toaster position="top-right" reverseOrder={false} />
+
         <Suspense fallback={<header className="h-16 bg-[#f9fcfa]" />}>
           <Navbar />
         </Suspense>

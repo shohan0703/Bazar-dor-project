@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 const API_URL =
   "https://openapi.programming-hero.com/api/bazardor/products";
@@ -75,6 +77,18 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [banglaDate, setBanglaDate] = useState("");
+  
+  const searchParams = useSearchParams();
+
+ 
+  useEffect(() => {
+    const errorParam = searchParams.get("error");
+    if (errorParam === "unauthorized") {
+      toast.error("এই পেজটি দেখতে প্রথমে লগইন করুন!", {
+        id: "unauthorized-toast", 
+      });
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const updateDate = () => {
@@ -136,7 +150,7 @@ export default function Home() {
     <main className="min-h-screen bg-[#f0f6f1] text-[#25352c]">
       <div className="mx-auto max-w-6xl px-4 pb-12 pt-5 sm:pt-7">
 
-        {/* Hero Section */}
+       
         <section className="flex min-h-[200px] items-center justify-between gap-5 rounded-2xl border border-[#e1e9e2] bg-[#fbfdfb] p-5 sm:p-8">
           <div className="max-w-xl">
             <span className="inline-block rounded-full bg-[#e0f2e5] px-3 py-1 text-xs font-medium text-green-800">
@@ -169,10 +183,10 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Dynamic Price Sections */}
+        
         <div className="mt-7 space-y-7" id="price-sections">
 
-          {/* Increased Section */}
+         
           <section>
             <h2 className="mb-4 flex items-center gap-2 text-lg font-bold">
               <span className="text-red-500">▲</span>
@@ -201,7 +215,7 @@ export default function Home() {
             )}
           </section>
 
-          {/* Decreased Section */}
+         
           <section>
             <h2 className="mb-4 flex items-center gap-2 text-lg font-bold">
               <span className="text-green-600">▼</span>
@@ -238,7 +252,7 @@ export default function Home() {
 
         </div>
 
-        {/* All Products Section */}
+       
         <section className="mt-8 pb-10" id="all-products">
           <div className="mb-5">
             <h2 className="text-xl font-bold text-[#25352c]">

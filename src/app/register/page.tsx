@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signUp, signIn } from "@/lib/auth-client";
+import { toast } from "react-hot-toast";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function RegisterPage() {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      alert("পাসওয়ার্ড দুটি মিলছে না!");
+      toast.error("পাসওয়ার্ড দুটি মিলছে না!");
       return;
     }
 
@@ -32,15 +33,28 @@ export default function RegisterPage() {
       },
       {
         onSuccess: () => {
-          alert("রেজিস্ট্রেশন সফল হয়েছে!");
+          toast.success("রেজিস্ট্রেশন সফল হয়েছে!");
           router.push("/");
         },
         onError: (ctx) => {
-          alert(ctx.error.message || "রেজিস্ট্রেশন ব্যর্থ হয়েছে!");
+          toast.error(ctx.error.message || "রেজিস্ট্রেশন ব্যর্থ হয়েছে!");
           setLoading(false);
         },
       }
     );
+  };
+
+  const handleSocialSignUp = async (provider: "google" | "github") => {
+    try {
+      toast.loading(`${provider === "google" ? "Google" : "GitHub"} দিয়ে সাইন আপ হচ্ছে...`);
+      await signIn.social({
+        provider,
+        callbackURL: "/",
+      });
+    } catch (err) {
+      toast.dismiss();
+      toast.error("সোশাল সাইন-আপ ব্যর্থ হয়েছে!");
+    }
   };
 
   return (
@@ -119,7 +133,7 @@ export default function RegisterPage() {
         <div className="grid grid-cols-2 gap-3">
           <button
             type="button"
-            onClick={() => signIn.social({ provider: "google" })}
+            onClick={() => handleSocialSignUp("google")}
             className="flex items-center justify-center gap-2 py-2 px-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg text-xs font-medium text-gray-700 transition"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -133,7 +147,7 @@ export default function RegisterPage() {
 
           <button
             type="button"
-            onClick={() => signIn.social({ provider: "github" })}
+            onClick={() => handleSocialSignUp("github")}
             className="flex items-center justify-center gap-2 py-2 px-3 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg text-xs font-medium text-gray-700 transition"
           >
             <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">

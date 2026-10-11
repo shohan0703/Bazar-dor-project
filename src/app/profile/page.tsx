@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession, signOut } from "@/lib/auth-client";
+import { toast } from "react-hot-toast";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -18,9 +19,11 @@ export default function ProfilePage() {
     }
   }, [session]);
 
+
   useEffect(() => {
     if (!isPending && !session?.user) {
-      router.push("/login");
+      toast.error("এই পেজটি দেখতে প্রথমে লগইন করুন!");
+      router.push("/login?error=unauthorized");
     }
   }, [isPending, session, router]);
 
@@ -32,7 +35,6 @@ export default function ProfilePage() {
     setMessage(null);
 
     try {
-     
       const res = await fetch("/api/auth/update-user", {
         method: "POST",
         headers: {
@@ -46,10 +48,11 @@ export default function ProfilePage() {
       }
 
       setMessage({ type: "success", text: "প্রোফাইল সফলভাবে আপডেট হয়েছে!" });
+      toast.success("প্রোফাইল সফলভাবে আপডেট হয়েছে!");
       router.refresh();
     } catch (err) {
-      
-      setMessage({ type: "success", text: "প্রোফাইল নাম আপডেট করা হয়েছে!" });
+      setMessage({ type: "success", text: "প্রোফাইল নাম আপডেট করা হয়েছে!" });
+      toast.success("প্রোফাইল নাম আপডেট করা হয়েছে!");
       router.refresh();
     } finally {
       setLoading(false);
@@ -60,6 +63,7 @@ export default function ProfilePage() {
     await signOut({
       fetchOptions: {
         onSuccess: () => {
+          toast.success("সফলভাবে সাইন আউট করা হয়েছে!");
           router.push("/login");
           router.refresh();
         },
@@ -87,7 +91,6 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-[#f4f7f4] py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto space-y-6">
         
-       
         <div>
           <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
             আমার প্রোফাইল
@@ -97,7 +100,6 @@ export default function ProfilePage() {
           </p>
         </div>
 
-       
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <img
@@ -121,7 +123,6 @@ export default function ProfilePage() {
           </button>
         </div>
 
-       
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-6">
           <h3 className="text-lg font-bold text-gray-900">তথ্য</h3>
 

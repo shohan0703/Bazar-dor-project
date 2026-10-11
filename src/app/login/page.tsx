@@ -1,16 +1,28 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "@/lib/auth-client";
+import { toast } from "react-hot-toast";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  // Protected route redirect check
+  useEffect(() => {
+    if (searchParams.get("error") === "unauthorized") {
+      toast.error("এই পেজটি দেখতে প্রথমে লগইন করুন!", {
+        id: "unauthorized-login-toast",
+      });
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,24 +36,34 @@ export default function LoginPage() {
       });
 
       if (res.error) {
-        setErrorMessage(res.error.message || "ইমেইল বা পাসওয়ার্ড ভুল হয়েছে!");
+        const errorMsg = res.error.message || "ইমেইল বা পাসওয়ার্ড ভুল হয়েছে!";
+        setErrorMessage(errorMsg);
+        toast.error(errorMsg);
       } else {
-        // লগইন সফল হলে হোমপেজে পাঠাবে
+        toast.success("সফলভাবে লগইন হয়েছে!");
         router.push("/");
         router.refresh();
       }
     } catch (err: any) {
-      setErrorMessage("লগইন করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+      const errorMsg = "লগইন করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।";
+      setErrorMessage(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
   };
 
   const handleSocialSignIn = async (provider: "google" | "github") => {
-    await signIn.social({
-      provider,
-      callbackURL: "/",
-    });
+    try {
+      toast.loading(`${provider === "google" ? "Google" : "GitHub"} দিয়ে সাইন ইন হচ্ছে...`);
+      await signIn.social({
+        provider,
+        callbackURL: "/",
+      });
+    } catch (err) {
+      toast.dismiss();
+      toast.error("সোশাল সাইন-ইন ব্যর্থ হয়েছে!");
+    }
   };
 
   return (
@@ -58,7 +80,7 @@ export default function LoginPage() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow-xl rounded-2xl border border-emerald-100 sm:px-10">
           
-          {/* Error Alert */}
+        
           {errorMessage && (
             <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm rounded">
               {errorMessage}
@@ -103,7 +125,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Social Sign In Divider */}
+          
           <div className="mt-6 relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-200" />
@@ -113,7 +135,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Social Buttons */}
+        
           <div className="mt-6 grid grid-cols-2 gap-3">
             <button
               onClick={() => handleSocialSignIn("google")}
